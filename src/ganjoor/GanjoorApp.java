@@ -1,4 +1,4 @@
-package ganjoor;
+﻿package ganjoor;
 
 import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
@@ -68,6 +68,29 @@ public class GanjoorApp {
             frame.add(buttonWordSearch);
             frame.setVisible(true);
         });
+private static void showFalHafez() {      
+  frame.getContentPane().removeAll();   
+     responseOmen = new JTextArea(20, 40); 
+  responseOmen.setEditable(false);  
+      responseOmen.setLineWrap(true);    
+    responseOmen.setWrapStyleWord(true); 
+responseOmen.setComponentOrientation(Component Orientation.RIGHT_TO_LEFT); // راست چین کردن متن 
+       JButton fetchButton = new JButton("فال");
+       fetchButton.addActionListener(new ActionListener()) {    
+  @Override        
+   public void actionPerformed(ActionEvent e) {         
+       new Thread(() -> {       
+             String falInfo = fetchOmenData();     
+               SwingUtilities.invokeLater(() -> responseOmen.setText(falInfo));  
+              }).start();            }        });
+    frame.add(new JLabel(" ;))"نیت کن و کلیک کن   
+     frame.add(fetchButton);    
+    frame.add(new JScrollPane(responseOmen));   
+     frame.revalidate();        frame.repaint();    }
+    private static String fetchOmenData() {        try { 
+ String apiUrl = "https://api.ganjoor.net/api/ganjoor/hafez/faal";   
+         URL url = new URL(apiUrl);       
+     HttpURLConnection connection = (HttpURLConnection) url.openConnection();}
     }
 
 }
