@@ -83,11 +83,13 @@ responseOmen.setComponentOrientation(Component Orientation.RIGHT_TO_LEFT); // ر
              String falInfo = fetchOmenData();     
                SwingUtilities.invokeLater(() -> responseOmen.setText(falInfo));  
               }).start();            }        });
-    frame.add(new JLabel(" ;))"نیت کن و کلیک کن   
+    frame.add(new JLabel("نیت کن و کلیک کن");  
      frame.add(fetchButton);    
     frame.add(new JScrollPane(responseOmen));   
-     frame.revalidate();        frame.repaint();    }
-    private static String fetchOmenData() {        try { 
+     frame.revalidate();     
+   frame.repaint();    }
+    private static String fetchOmenData() {   
+     try { 
  String apiUrl = "https://api.ganjoor.net/api/ganjoor/hafez/faal";   
          URL url = new URL(apiUrl);       
      HttpURLConnection connection = (HttpURLConnection) url.openConnection();}
