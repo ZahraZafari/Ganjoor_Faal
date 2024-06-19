@@ -68,31 +68,50 @@ public class GanjoorApp {
             frame.add(buttonWordSearch);
             frame.setVisible(true);
         });
-private static void showFalHafez() {      
-  frame.getContentPane().removeAll();   
-     responseOmen = new JTextArea(20, 40); 
-  responseOmen.setEditable(false);  
+
+ private static void showFalHafez() {      
+      frame.getContentPane().removeAll();   
+      responseOmen = new JTextArea(20, 40); 
+      responseOmen.setEditable(false);  
       responseOmen.setLineWrap(true);    
-    responseOmen.setWrapStyleWord(true); 
-responseOmen.setComponentOrientation(Component Orientation.RIGHT_TO_LEFT); // راست چین کردن متن 
-       JButton fetchButton = new JButton("فال");
-       fetchButton.addActionListener(new ActionListener()) {    
-  @Override        
-   public void actionPerformed(ActionEvent e) {         
-       new Thread(() -> {       
-             String falInfo = fetchOmenData();     
-               SwingUtilities.invokeLater(() -> responseOmen.setText(falInfo));  
-              }).start();            }        });
-    frame.add(new JLabel("نیت کن و کلیک کن");  
-     frame.add(fetchButton);    
-    frame.add(new JScrollPane(responseOmen));   
-     frame.revalidate();     
-   frame.repaint();    }
-    private static String fetchOmenData() {   
-     try { 
- String apiUrl = "https://api.ganjoor.net/api/ganjoor/hafez/faal";   
-         URL url = new URL(apiUrl);       
-     HttpURLConnection connection = (HttpURLConnection) url.openConnection();}
+      responseOmen.setWrapStyleWord(true); 
+      responseOmen.setComponentOrientation(Component Orientation.RIGHT_TO_LEFT); // راست چین کردن متن 
+      JButton fetchButton = new JButton("فال");
+      fetchButton.addActionListener(new ActionListener() {    
+      @Override        
+  public void actionPerformed(ActionEvent e) {         
+        new Thread(() -> {       
+        String falInfo = fetchOmenData();     
+        SwingUtilities.invokeLater(() -> responseOmen.setText(falInfo));  
+         }).start();            }        });
+         frame.add(new JLabel("نیت کن و کلیک کن"));  
+         frame.add(fetchButton);    
+         frame.add(new JScrollPane(responseOmen));   
+         frame.revalidate();     
+         frame.repaint();    }
+    
+  private static String fetchOmenData() {   
+      try { 
+      String apiUrl = "https://api.ganjoor.net/api/ganjoor/hafez/faal";   
+      URL url = new URL(apiUrl);       
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod("GET");
+      BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      String line;
+      StringBuilder response = new StringBuilder();
+      while ((line = reader.readLine()) != null) {  
+       response.append(line);  }
+      reader.close();
+      JSONObject jsonObject = new JSONObject(response.toString());
+      JSONArray verses = jsonObject.getJSONArray("verses");
+      StringBuilder result = new StringBuilder();
+      for (int i = 0; i < verses.length(); i++) {  
+        result.append(verses.getJSONObject(i).getString("text" )).append("\n"); }
+      return result.toString();
+      } catch (Exception e) {    
+        return " خطا در دریافت فال . لطفا اینترنت خود را بررسی کنید";   
+   } 
+}
     }
 
 }
