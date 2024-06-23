@@ -148,4 +148,43 @@ public class GanjoorApp {
         frame.revalidate();
         frame.repaint();
     }
+
+    private static String fetchPoetsBio() {
+        try {
+            String apiUrl = "https://api.ganjoor.net/api/ganjoor/poets";
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            StringBuilder response = new StringBuilder();
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            reader.close();
+
+            JSONArray jsonArray = new JSONArray(response.toString());
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject poet = jsonArray.getJSONObject(i);
+                String name = poet.getString("name");
+                String birthYear = poet.optString("birthYearInLHijri", "نامشخص");
+                String deathYear = poet.optString("deathYearInLHijri", "نامشخص");
+                String birthPlace = poet.optString("birthPlace", "نامشخص");
+                String deathPlace = poet.optString("deathPlace", "نامشخص");
+                result.append("نام: ").append(name).append("\n")
+                      .append("سال تولد: ").append(birthYear).append("\n")
+                      .append("سال وفات: ").append(deathYear).append("\n")
+                      .append("محل تولد: ").append(birthPlace).append("\n")
+                      .append("محل وفات: ").append(deathPlace).append("\n\n");
+            }
+
+            return result.toString();
+
+        } catch (Exception e) {
+            return "خطا در دریافت اطلاعات شعرا. لطفاً اینترنت خود را بررسی کنید.";
+        }
+    }
 }
