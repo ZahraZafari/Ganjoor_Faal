@@ -187,4 +187,33 @@ public class GanjoorApp {
             return "خطا در دریافت اطلاعات شعرا. لطفاً اینترنت خود را بررسی کنید.";
         }
     }
-}
+
+‌‌‌‌private‌static‌void‌showSearch()‌{ 
+ ‌‌‌‌‌‌‌‌frame.getContentPane().removeAll();
+ ‌‌‌‌‌‌‌‌textWordSearch‌=‌new‌JTextField(15);
+ ‌‌‌‌‌‌‌‌responseWordSearch‌=‌new‌ JTextArea(20,‌40); ‌‌‌‌‌‌‌‌ 
+ responseWordSearch.setEditable(false); ‌‌‌‌‌‌‌‌ 
+ responseWordSearch.setLineWrap(true); 
+‌‌‌‌‌‌‌‌ responseWordSearch.setWrapStyleWord(true);
+ ‌‌‌‌‌‌‌‌responseWordSearch.setComponentOrient ation(ComponentOrientation.RIGHT_TO_L EFT);‌//‌ متن ‌ کردن ‌ چین ‌ راست 
+ ‌‌‌‌‌‌‌‌JButton‌fetchButton‌=‌new‌ JButton("جستجو");
+ ‌‌‌fetchButton.addActionListener(new‌ ActionListener()‌{
+
+ ‌@Override
+
+‌‌‌‌‌‌‌‌‌‌‌‌public‌void‌ actionPerformed(ActionEvent‌e)‌{ 
+‌ new‌Thread(()‌->‌{ 
+‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌ String‌word‌=‌ textWordSearch.getText();
+ ‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌String‌searchResults‌=‌ fetchWordSearch(word); 
+ ‌‌SwingUtilities.invokeLater(()‌->‌ responseWordSearch.setText(searchResult s)); 
+‌   }).start();
+  ‌‌‌‌‌‌‌‌‌‌‌‌} 
+ ‌‌‌‌‌‌‌‌});
+ ‌frame.add(new‌JLabel(":کلمه ‌ مورد ‌‌نظر را ‌  کنید"‌));
+ ‌frame.add(textWordSearch);
+ ‌‌‌‌‌‌‌‌frame.add(fetchButton); 
+ ‌‌‌‌‌‌‌‌frame.add(new‌ JScrollPane(responseWordSearch)); 
+ ‌frame.revalidate();
+ ‌‌‌‌‌‌‌‌frame.repaint();
+ ‌‌‌‌}
+
