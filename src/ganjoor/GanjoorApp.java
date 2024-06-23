@@ -188,32 +188,64 @@ public class GanjoorApp {
         }
     }
 
-‌‌‌‌private‌static‌void‌showSearch()‌{ 
- ‌‌‌‌‌‌‌‌frame.getContentPane().removeAll();
- ‌‌‌‌‌‌‌‌textWordSearch‌=‌new‌JTextField(15);
- ‌‌‌‌‌‌‌‌responseWordSearch‌=‌new‌ JTextArea(20,‌40); ‌‌‌‌‌‌‌‌ 
- responseWordSearch.setEditable(false); ‌‌‌‌‌‌‌‌ 
- responseWordSearch.setLineWrap(true); 
-‌‌‌‌‌‌‌‌ responseWordSearch.setWrapStyleWord(true);
- ‌‌‌‌‌‌‌‌responseWordSearch.setComponentOrient ation(ComponentOrientation.RIGHT_TO_L EFT);‌//‌ متن ‌ کردن ‌ چین ‌ راست 
- ‌‌‌‌‌‌‌‌JButton‌fetchButton‌=‌new‌ JButton("جستجو");
- ‌‌‌fetchButton.addActionListener(new‌ ActionListener()‌{
+    private static void showSearch() {
+        frame.getContentPane().removeAll();
+        textWordSearch = new JTextField(15);
+        responseWordSearch = new JTextArea(20, 40);
+        responseWordSearch.setEditable(false);
+        responseWordSearch.setLineWrap(true);
+        responseWordSearch.setWrapStyleWord(true);
+        responseWordSearch.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT); // راست‌چین کردن متن
+        JButton fetchButton = new JButton("جستجو");
+        fetchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new Thread(() -> {
+                    String word = textWordSearch.getText();
+                    String searchResults = fetchWordSearch(word);
+                    SwingUtilities.invokeLater(() -> responseWordSearch.setText(searchResults));
+                }).start();
+            }
+        });
 
- ‌@Override
+        frame.add(new JLabel("کلمه مورد نظر را وارد کنید:"));
+        frame.add(textWordSearch);
+        frame.add(fetchButton);
+        frame.add(new JScrollPane(responseWordSearch));
+        frame.revalidate();
+        frame.repaint();
+    }
 
-‌‌‌‌‌‌‌‌‌‌‌‌public‌void‌ actionPerformed(ActionEvent‌e)‌{ 
-‌ new‌Thread(()‌->‌{ 
-‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌ String‌word‌=‌ textWordSearch.getText();
- ‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌‌String‌searchResults‌=‌ fetchWordSearch(word); 
- ‌‌SwingUtilities.invokeLater(()‌->‌ responseWordSearch.setText(searchResult s)); 
-‌   }).start();
-  ‌‌‌‌‌‌‌‌‌‌‌‌} 
- ‌‌‌‌‌‌‌‌});
- ‌frame.add(new‌JLabel(":کلمه ‌ مورد ‌‌نظر را ‌  کنید"‌));
- ‌frame.add(textWordSearch);
- ‌‌‌‌‌‌‌‌frame.add(fetchButton); 
- ‌‌‌‌‌‌‌‌frame.add(new‌ JScrollPane(responseWordSearch)); 
- ‌frame.revalidate();
- ‌‌‌‌‌‌‌‌frame.repaint();
- ‌‌‌‌}
+    private static String fetchWordSearch(String word) {
+        try {
+            String encodedWord = URLEncoder.encode(word, "UTF-8");
+            String apiUrl = "https://api.ganjoor.net/api/ganjoor/poems/search?PageNumber=1&PageSize=10&term=" + encodedWord + "&poetId=0&catId=0";
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            StringBuilder response = new StringBuilder();
 
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            reader.close();
+
+            JSONArray poems = new JSONArray(response.toString());
+            StringBuilder text = new StringBuilder();
+            
+            for (int i = 0; i < poems.length(); i++) {
+                JSONObject poemObject = poems.getJSONObject(i);
+                String poemText = poemObject.getString("plainText");
+                text.append(poemObject.getString("title")).append(": ").append(poemText).append("\n\n");
+            }
+
+            return text.toString();
+
+        } catch (Exception e) {
+            return "خطا در جستجوی اشعار. لطفاً اینترنت خود را بررسی کنید.";
+        }
+    }
+}
